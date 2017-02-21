@@ -1,0 +1,40 @@
+,0,1,2,3,4,5,6,7,8,9,10,11,12,13
+0,b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b''
+1,b'',b'',b'',"b'Three\xc2\xa0Months Ended\n  September 30,'",b'',b'',"b'Nine Months Ended\n  September 30,'",,,,,,,
+2,b'(Dollars\xc2\xa0in\xc2\xa0millions\xc2\xa0except\n  per\xc2\xa0share\xc2\xa0amounts)',b'',b'',b'2013',b'',b'',b'2012',b'',b'',b'2013',b'',b'',b'2012',
+3,b'Revenue:',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+4,b'Services',b'',b'$',"b'14,225'",b'',b'$',"b'14,626'",b'',b'$',"b'42,811'",b'',b'$',"b'44,279'",
+5,b'Sales',b'',b'',"b'8,987'",b'',b'',"b'9,642'",b'',b'',"b'27,735'",b'',b'',"b'29,424'",
+6,b'Financing',b'',b'',b'509',b'',b'',b'479',b'',b'',"b'1,506'",b'',b'',"b'1,500'",
+7,b'Total\n  revenue',b'',b'',"b'23,720'",b'',b'',"b'24,747'",b'',b'',"b'72,052'",b'',b'',"b'75,203'",
+8,b'Cost:',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+9,b'Services',b'',b'',"b'9,098'",b'',b'',"b'9,515'",b'',b'',"b'27,950'",b'',b'',"b'29,285'",
+10,b'Sales',b'',b'',"b'2,975'",b'',b'',"b'3,242'",b'',b'',"b'9,108'",b'',b'',"b'10,003'",
+11,b'Financing',b'',b'',b'268',b'',b'',b'258',b'',b'',b'805',b'',b'',b'784',
+12,b'Total\n  cost',b'',b'',"b'12,341'",b'',b'',"b'13,016'",b'',b'',"b'37,863'",b'',b'',"b'40,072'",
+13,b'Gross\n  profit',b'',b'',"b'11,380'",b'',b'',"b'11,732'",b'',b'',"b'34,189'",b'',b'',"b'35,131'",
+14,b'Expense\n  and other income:',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+15,"b'Selling,\n  general and administrative'",b'',b'',"b'5,255'",b'',b'',"b'5,908'",b'',b'',"b'17,512'",b'',b'',"b'17,632'",
+16,"b'Research,\n  development and engineering'",b'',b'',"b'1,468'",b'',b'',"b'1,534'",b'',b'',"b'4,661'",b'',b'',"b'4,722'",
+17,b'Intellectual\n  property and custom',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+18,b'',b'development\n  income',b'',b'',b'(191)',b'',b'',b'(303)',b'',b'',b'(621)',b'',b'',b'(847)'
+19,b'Other\n  (income) and expense',b'',b'',b'(62)',b'',b'',b'(606)',b'',b'',b'(214)',b'',b'',b'(796)',
+20,b'Interest\n  expense',b'',b'',b'97',b'',b'',b'124',b'',b'',b'289',b'',b'',b'350',
+21,b'Total\n  expense and other income',b'',b'',"b'6,567'",b'',b'',"b'6,657'",b'',b'',"b'21,627'",b'',b'',"b'21,060'",
+22,b'Income\n  before income taxes',b'',b'',"b'4,812'",b'',b'',"b'5,074'",b'',b'',"b'12,562'",b'',b'',"b'14,071'",
+23,b'Provision\n  for income taxes',b'',b'',b'772',b'',b'',"b'1,251'",b'',b'',"b'2,263'",b'',b'',"b'3,300'",
+24,b'Net\n  income',b'',b'$',"b'4,041'",b'',b'$',"b'3,824'",b'',b'$',"b'10,299'",b'',b'$',"b'10,771'",
+25,b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b''
+26,b'Earnings\n  per share of common stock:',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+27,b'',b'Assuming\n  dilution',b'',b'$',b'3.68',b'',b'$',b'3.33',b'',b'$',b'9.27',b'',b'$',b'9.27'
+28,b'',b'Basic',b'',b'$',b'3.70',b'',b'$',b'3.36',b'',b'$',b'9.35',b'',b'$',b'9.38'
+29,b'Weighted-average\n  number of common',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+30,b'',b'shares\n  outstanding: (millions)',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b''
+31,b'',b'Assuming\n  dilution',b'',b'',"b'1,098.8'",b'',b'',"b'1,149.3'",b'',b'',"b'1,110.7'",b'',b'',"b'1,161.8'"
+32,b'',b'Basic',b'',b'',"b'1,090.9'",b'',b'',"b'1,137.2'",b'',b'',"b'1,101.8'",b'',b'',"b'1,148.4'"
+33,b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b''
+34,b'Cash\n  dividend per common share',b'',b'$',b'0.95',b'',b'$',b'0.85',b'',b'$',b'2.75',b'',b'$',b'2.45',
+35,b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b''
+36,b'(Amounts may not add due to rounding.)',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',
+37,b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b'',b''
+38,b'(The accompanying notes are an integral part of the\n  financial statements.)',b'',b'',b'',b'',b'',b'',,,,,,,
