@@ -21,7 +21,7 @@ def ConfigSectionMap(section):
     return dict1
 
 
-# In[32]:
+# In[3]:
 
 from bs4 import BeautifulSoup
 from collections import namedtuple
@@ -34,7 +34,7 @@ import pandas as pd
 import os
 import logging
 import zipfile
-import tinys3
+#import tinys3
 
 class Page:
     
@@ -44,6 +44,7 @@ class Page:
         """
 
         self.link = ur.urlopen(url)
+        self.fileName="EdgarFiles"
         
     def get_hyperlink(self):
         
@@ -55,7 +56,7 @@ class Page:
             
             for td in row.findAll('a'):
                 if "10" in td.text:
-                    print("gsHA ",td.get('href'))
+#                     print("gsHA ",td.get('href'))
                     path += td.get('href')
                    
   
@@ -88,7 +89,7 @@ class Page:
         # hence the errors in catching table 5. 
         
         # Creating dummy list of tables with one table so that looping can be simulated
-        for i in range(0,383):
+        for i in range(0,100):
             table = soup.findAll("table")[i] # todo align with alt row color changes later
             #table = soup.findAll("table",attrs={'border':1})[i]
             tables.append(table)
@@ -105,7 +106,7 @@ class Page:
             dataTable = DataFrame()
             df = dataTable.parse_html_table(table)
             #print("Data Frame : ",df)
-            
+            self.fileName = ""
             tableRows = table.findAll("tr")
             rowCount = 0
             for row in tableRows:
@@ -121,6 +122,7 @@ class Page:
                     if( rowCount < 3 ):
                         df.set_value(rowCount,tdCount,x)
                     elif( rowCount >= 3):
+                            
                         if(tdCount == 0):
 
                             if(str(entry.text.strip())):
@@ -164,14 +166,20 @@ class Page:
     
     def encode_text(self,x):
         try:
-            nonBreakSpace = u'\xa0'
             x = x.text.strip().encode("utf-8")
             x = x.decode("utf-8")
+            special_chars = ["[!@#$]", "%",":"]
+            x=self.string_cleanup(x,special_chars)
         except Exception:
             #print 'encoding error: {0} {1}'.format(rowCount, tdCount)
             x = ""
             
-        return x 
+        return x
+    
+    def string_cleanup(self,x, notwanted):
+        for item in notwanted:
+            x = re.sub(item, '', x)
+        return x
 
     def save_tables(self, tables, ignore_small=False):
         """
@@ -182,9 +190,14 @@ class Page:
         
         counter = 1
         for table in tables:
+           
+            
             if ignore_small:
                 if table.get_metadata().num_entries > 5:
-                    name = "EdgarFiles/table_" + str(counter) +".csv"
+                    #print(" big > 5 ",table.get_value(3, 0)," and ",table.get_value(0, 4))
+                    x = table.get_value(0, 0)       
+                    self.fileName=x.replace("\n", "_and_").replace(" ","_").replace("/","_or_")
+                    name = "EdgarFiles/"+CIK+"/"+ str(counter)+"_" +self.fileName+".csv"
                     try:
                         table.to_csv(name)
                         print("printing if it gets table"+table.to_csv(name))
@@ -194,7 +207,14 @@ class Page:
                         print("exception in creating files"+table.to_csv(name))
                     counter += 1
             else:
-                name = "EdgarFiles/Table_" + str(counter)+".csv" ## todo remove trialcsv
+                try:
+                    x = table.get_value(3, 0) ## to name the file with first meaningful variable found at 0,3      
+                except Exception:                        
+                    x = table.get_value(0, 0)  ## for small files with no 3rd row
+
+                self.fileName=str(x).replace("\n", "_and_").replace(" ","_").replace("/","_or_").replace("*","")
+
+                name = "EdgarFiles/"+CIK+"/" + str(counter)+"_"+self.fileName +".csv" ## todo remove trialcsv
                 table.to_csv(name)
                 #print(os.getcwd())
                 counter += 1
@@ -325,10 +345,10 @@ print(link1)
 logger = logging.getLogger()
 page = Page(link1)
 tables = page.get_tables()
-page.create_directory("EdgarFiles")
+page.create_directory("EdgarFiles/"+CIK)
 page.save_tables(tables, ignore_small=False)
 page.create_zip_folder('EdgarFiles')
-page.upload_zip_to_s3('edgardatasets')
+#page.upload_zip_to_s3('edgardatasets')
 
 
 # In[ ]:
