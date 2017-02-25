@@ -41,7 +41,7 @@ class Page:
         raw_html = self.link.read()
         soup = BeautifulSoup(raw_html, "html.parser")
         tables = soup.findAll("table")
-
+        
         # have to extract each entry using nested loops
         table_list = []
         for table in tables:
@@ -55,10 +55,14 @@ class Page:
                 entries = row.findAll("td")
                 for entry in entries:
                     # fix the encoding issues with utf-8
+                 
                     entry = entry.text.encode("utf-8", "ignore")
+                    pattern_colon = entry.findAll("b",style="font-size:10.0pt;")
+                    print(pattern_colon,"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<, ")
                     #strip_unicode = re.compile("([^-_a-zA-Z0-9!@#%&=,/'\";:~`\$\^\*\(\)\+\[\]\.\{\}\|\?\<\>\\]+|[^\s]+)")
                     #entry = strip_unicode.sub(" ", entry.decode(encoding="utf-8"))
                     #print(len(entry))
+                   
                     value_list.append(entry)
                 # we don't want empty data packages
                 print(value_list[0])
@@ -144,11 +148,11 @@ class Table:
 # don't include the extension in the file name
 #tables[0].save_table("customName") ##### to-do
 
-input("hskHKja")
+#input("hskHKja")
 
 ############ Do we need main here >>??? ###
 
-mainUrl = "http://www.sec.gov/Archives/edgar/data/"
+"""mainUrl = "http://www.sec.gov/Archives/edgar/data/"
 
 CIK = input("Enter CIK (eg :0000051143)")
 DAN = input("Enter document accession number -DAN (eg :000005114313000007 )")
@@ -160,16 +164,16 @@ partCIK = DAN[0:10]+"-"
 partDAN = DAN[10:12]+"-"
 lastPart = DAN[12:18]+"-index.html"
 
-completeURL = mainUrl+CIK+"/"+DAN+"/"+partCIK+partDAN+lastPart
+completeURL = mainUrl+CIK+"/"+DAN+"/"+partCIK+partDAN+lastPart"""
 
-html = Page(completeURL)
-link1 = html.get_hyperlink()
+#html = Page(completeURL)
+#link1 = html.get_hyperlink()
 
 
 # url that contains the tables we want
 url="https://www.sec.gov/Archives/edgar/data/51143/000005114313000007/ibm13q3_10q.htm"
 
-print(" >>>>>>> match "+completeURL == url)
+#print(" >>>>>>> match "+completeURL == url)
 
 page = Page(url)
 tables = page.get_tables()
