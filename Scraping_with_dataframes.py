@@ -21,7 +21,7 @@ def ConfigSectionMap(section):
     return dict1
 
 
-# In[4]:
+# In[6]:
 
 from bs4 import BeautifulSoup
 from collections import namedtuple
@@ -34,6 +34,7 @@ import pandas as pd
 import os
 import logging
 import zipfile
+import sys
 #import tinys3
 
 class Page:
@@ -42,9 +43,12 @@ class Page:
         """
         Retrieves and stores the urllib.urlopen object for a given url
         """
-
-        self.link = ur.urlopen(url)
-        self.fileName="EdgarFiles"
+        try:
+            self.link = ur.urlopen(url)
+            self.fileName="EdgarFiles"
+        except Exception:
+            print("INVALID URL. Please check CIK or Accession number")
+            sys.exit()
         
     def get_hyperlink(self):
         
@@ -345,19 +349,4 @@ page.create_directory("EdgarFiles/"+CIK)
 page.save_tables(tables, ignore_small=False)
 page.create_zip_folder('EdgarFiles')
 #page.upload_zip_to_s3('edgardatasets')
-
-
-# In[ ]:
-
-https://www.sec.gov/Archives/edgar/data/1652044/000165204417000008/goog10-kq42016.htm
-
-
-# In[ ]:
-
-https://www.sec.gov/Archives/edgar/data/1652044/000165204417000008/goog10-kq42016.htm
-
-
-# In[ ]:
-
-
 
