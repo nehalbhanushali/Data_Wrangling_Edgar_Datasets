@@ -21,7 +21,7 @@ def ConfigSectionMap(section):
     return dict1
 
 
-# In[3]:
+# In[4]:
 
 from bs4 import BeautifulSoup
 from collections import namedtuple
@@ -72,83 +72,78 @@ class Page:
 
         raw_html = self.link.read()
         soup = BeautifulSoup(raw_html, "html.parser")
-        # to get tables with background color only
-        #tables = soup.findAll("table",attrs={'border':1}) ## todo CHECK ALT TR COLORS as google docs dont have border :1
         tables = soup.findAll("table")
-#         td=soup.find('td', attrs={'style': re.compile("^border:#B9CDE5") })
-#         for mytr in td.parents:
-#             for mytable in mytr.parents:
-#                 tables.append(mytable)
-                
+
+        actual =  len(tables)       
         print("Actual ",len(tables))
-        #tables = soup.findAll("table") # actual resultset of tables to be used ultimately
 
         ##### Test: one table
         tables = soup.findAll("Nehal")
-        # expl: is a tag, not resultset, cant loop over it to find tables,
+        #  tables = soup.findAll("table")[5] expl: is a tag, not resultset, cant loop over it to find tables,
         # hence the errors in catching table 5. 
         
         # Creating dummy list of tables with one table so that looping can be simulated
-        for i in range(0,100):
+        for i in range(0,actual):
             table = soup.findAll("table")[i] # todo align with alt row color changes later
-            #table = soup.findAll("table",attrs={'border':1})[i]
             tables.append(table)
+            
         print("Testing ",len(tables)) 
-            #print(" type of table5 ",type(table))
-        
-        # print(" type of tables1 now",type(tables1))
         
         
-        ## Looping through all tables in soup fetched page remove _list vars if dataframe success
+        
+        ## Looping through all tables in soup fetched page 
         table_list = []
         tableCount = 0
         for table in tables:
-            dataTable = DataFrame()
-            df = dataTable.parse_html_table(table)
-            #print("Data Frame : ",df)
-            self.fileName = ""
-            tableRows = table.findAll("tr")
-            rowCount = 0
-            for row in tableRows:
-                entries = row.findAll("td")
-                tdCount = 0
-                for entry in entries:
-                    
-                    x = self.encode_text(entry) ## function not working
-                    
+            coloredTD = table.findAll('td', attrs={'style':re.compile(r'background')})
+#             print("no of colord tds ",len(coloredTD))
+            if(len(coloredTD) >0):
+                dataTable = DataFrame()
+                df = dataTable.parse_html_table(table)
+                #print("Data Frame : ",df)
+                self.fileName = ""
+                tableRows = table.findAll("tr")
+                rowCount = 0
+                for row in tableRows:
+                    entries = row.findAll("td")
+                    tdCount = 0
+                    for entry in entries:
 
-                    #print(str(x).startswith("$")," >>>> $")    
-                   
-                    if( rowCount < 3 ):
-                        df.set_value(rowCount,tdCount,x)
-                    elif( rowCount >= 3):
-                            
-                        if(tdCount == 0):
+                        x = self.encode_text(entry) ## function not working
 
-                            if(str(entry.text.strip())):
-                            #if re.compile('^[a-z0-9\.]+$').match(str(x)):
-                                #print(x ," is string")
-                                df.set_value(rowCount,tdCount,x) 
-                            else:
-                                tdCount = tdCount -1
-                              
-                            #print(" entry lengths ", rowCount)
-                        else:
+
+                        #print(str(x).startswith("$")," >>>> $")    
+
+                        if( rowCount < 3 ):
                             df.set_value(rowCount,tdCount,x)
-                            
-                    else :
-                        df.set_value(rowCount,tdCount,x)
-                       
-                    if str(x).find("$") != -1: 
-                        df.set_value(rowCount,tdCount,"") 
-                        
-                    # looking for meaningful data
-                    #for i in entry.findAll('font',attrs={'style':'font-size:10.0pt;'}):
-                    tdCount+=1 
-                rowCount+=1
-            tableCount+=1
-            table_list.append(df)
-            
+                        elif( rowCount >= 3):
+
+                            if(tdCount == 0):
+
+                                if(str(entry.text.strip())):
+                                #if re.compile('^[a-z0-9\.]+$').match(str(x)):
+                                    #print(x ," is string")
+                                    df.set_value(rowCount,tdCount,x) 
+                                else:
+                                    tdCount = tdCount -1
+
+                                #print(" entry lengths ", rowCount)
+                            else:
+                                df.set_value(rowCount,tdCount,x)
+
+                        else :
+                            df.set_value(rowCount,tdCount,x)
+
+                        if str(x).find("$") != -1: 
+                            df.set_value(rowCount,tdCount,"") 
+
+                        # looking for meaningful data
+                        #for i in entry.findAll('font',attrs={'style':'font-size:10.0pt;'}):
+                        tdCount+=1 
+                    rowCount+=1
+                tableCount+=1
+                table_list.append(df)
+        print("tableCount with colored td ",tableCount)    
         return table_list
     
     def encode_text_not_working(self,x):
@@ -265,13 +260,14 @@ class DataFrame:
             n_columns = 0
             n_rows=0
             column_names = []
-    
+#             hasColoredTD = false
             # Find number of rows and columns
             # we also find the column titles if we can
             for row in table.find_all('tr'):
                 
                 # Determine the number of rows in the table
                 td_tags = row.find_all('td')
+ 
                 if len(td_tags) > 0:
                     n_rows+=1
                     if n_columns == 0 or n_columns < len(td_tags):
