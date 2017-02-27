@@ -21,7 +21,7 @@ def ConfigSectionMap(section):
     return dict1
 
 
-# In[6]:
+# In[2]:
 
 from bs4 import BeautifulSoup
 from collections import namedtuple
@@ -35,7 +35,7 @@ import os
 import logging
 import zipfile
 import sys
-#import tinys3
+import tinys3
 
 class Page:
     
@@ -348,5 +348,5 @@ tables = page.get_tables()
 page.create_directory("EdgarFiles/"+CIK)
 page.save_tables(tables, ignore_small=False)
 page.create_zip_folder('EdgarFiles')
-#page.upload_zip_to_s3('edgardatasets')
+page.upload_zip_to_s3('edgardatasets')
 
