@@ -64,7 +64,6 @@ class UploadToS3(luigi.Task):
     CIK = luigi.Parameter()
     DAN = luigi.Parameter()
     def requires(self):
-        #return []
         return [Part1(CIK=self.CIK,DAN=self.DAN)]
  
     def output(self):
