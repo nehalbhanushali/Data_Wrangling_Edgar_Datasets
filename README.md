@@ -7,8 +7,7 @@ Approach one:-
 1. Download the docker file from the repository.
 
 2. Start docker, build the docker file.
-  ```python
-  docker build -t Team1-Part-1 . ```
+  ```python docker build -t Team1-Part-1 . ```
 
 DockerFile downloads python image and installs required packages. It then clones part-1 repo copies required files to container and sets command to run part-1 python script.
 
