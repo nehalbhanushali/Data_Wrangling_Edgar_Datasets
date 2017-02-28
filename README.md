@@ -23,8 +23,7 @@ Approach 2:
 docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets
 
 
-
-  LUIGI WORKFLOW
+LUIGI WORKFLOW
 Approach 3:
 
 1. Download docker image from docker hub- 
