@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 import configparser
 Config = configparser.ConfigParser()
@@ -21,7 +21,7 @@ def ConfigSectionMap(section):
     return dict1
 
 
-# In[2]:
+# In[9]:
 
 from bs4 import BeautifulSoup
 from collections import namedtuple
@@ -87,7 +87,7 @@ class Page:
         # hence the errors in catching table 5. 
         
         # Creating dummy list of tables with one table so that looping can be simulated
-        for i in range(0,actual):
+        for i in range(0,1): # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             table = soup.findAll("table")[i] # todo align with alt row color changes later
             tables.append(table)
             
@@ -236,16 +236,29 @@ class Page:
                 zf.write(os.path.join(dirname, filename))
         zf.close()
     
-    def upload_zip_to_s3(self,path):
-        S3_ACCESS_KEY = ConfigSectionMap("Part_1")['s3_access_key']#'AKIAICSMTFLAR54DYMQQ'
-        S3_SECRET_KEY = ConfigSectionMap("Part_1")['s3_secret_key']#'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'
-        host='edgardatasets.s3-website-us-west-2.amazonaws.com'
+    def upload_zip_to_s3(self,filetoupload):
+        S3_ACCESS_KEY= input("Enter S3_ACCESS_KEY : ")
+        S3_SECRET_KEY =  input("Enter S3_SECRET_KEY : ")
+        
+#         S3_ACCESS_KEY = ConfigSectionMap("Part_1")['s3_access_key']#'AKIAICSMTFLAR54DYMQQ'
+#         S3_SECRET_KEY = ConfigSectionMap("Part_1")['s3_secret_key']#'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'
+        try:
+            conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
+            #bucket = conn.create_bucket('edgar-data-set')
+            bucket = input("Enter BUCKET_NAME : ")
+                # Uploading a single file
+            f = open(filetoupload,'rb')
+            conn.upload(filetoupload,f,bucket)
+            print("Upload to s3 successfull")
+           
+        except Exception:
+            print("INVALID keys, please try again")
+            self.upload_zip_to_s3(filetoupload)
+        #host='edgardatasets.s3-website-us-west-2.amazonaws.com'
         # Creating a simple connection
-        conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
-
-        # Uploading a single file
-        f = open('EdgarFiles.zip','rb')
-        conn.upload('EdgarFiles.zip',f,path)
+        
+        
+        
                 
                 
 Metadata = namedtuple("Metadata", "num_cols num_entries")
@@ -348,5 +361,15 @@ tables = page.get_tables()
 page.create_directory("EdgarFiles/"+CIK)
 page.save_tables(tables, ignore_small=False)
 page.create_zip_folder('EdgarFiles')
-page.upload_zip_to_s3('edgardatasets')
+page.upload_zip_to_s3('EdgarFiles.zip')
+
+
+
+# In[ ]:
+
+AKIAJID52SF663DJKYWQ
+4Ze54escLJz3dvN2398ne8FyikJ/Qk6sVnD0V6Cw
+
+AKIAJID52SF663DJKYWQ
+4Ze54escLJz3dvN2398ne8FyikJ/Qk6sVnD0V6Cw
 
