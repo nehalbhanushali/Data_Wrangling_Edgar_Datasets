@@ -3,26 +3,6 @@
 
 # In[ ]:
 
-import configparser
-Config = configparser.ConfigParser()
-Config.read('config.ini')
-Config.sections()
-def ConfigSectionMap(section):
-    dict1 = {}
-    options = Config.options(section)
-    for option in options:
-        try:
-            dict1[option] = Config.get(section, option)
-            if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
-        except:
-            print("exception on %s!" % option)
-            dict1[option] = None
-    return dict1
-
-
-# In[9]:
-
 from bs4 import BeautifulSoup
 from collections import namedtuple
 import urllib.request as ur # urllib2 is latest?
@@ -79,19 +59,17 @@ class Page:
         tables = soup.findAll("table")
 
         actual =  len(tables)       
-        print("Actual ",len(tables))
+        print("Actual number of tables",len(tables))
 
         ##### Test: one table
         tables = soup.findAll("Nehal")
-        #  tables = soup.findAll("table")[5] expl: is a tag, not resultset, cant loop over it to find tables,
-        # hence the errors in catching table 5. 
         
         # Creating dummy list of tables with one table so that looping can be simulated
-        for i in range(0,1): # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        for i in range(0,actual):
             table = soup.findAll("table")[i] # todo align with alt row color changes later
             tables.append(table)
             
-        print("Testing ",len(tables)) 
+        print("Looping through ",len(tables), " tables") 
         
         
         
@@ -141,27 +119,12 @@ class Page:
                         if str(x).find("$") != -1: 
                             df.set_value(rowCount,tdCount,"") 
 
-                        # looking for meaningful data
-                        #for i in entry.findAll('font',attrs={'style':'font-size:10.0pt;'}):
                         tdCount+=1 
                     rowCount+=1
                 tableCount+=1
                 table_list.append(df)
-        print("tableCount with colored td ",tableCount)    
+        print("Tables with sensible data : ",tableCount)    
         return table_list
-    
-    def encode_text_not_working(self,x):
-        try:
-            x = x.text.encode("utf-8")
-            strip_unicode = re.compile("([^-_a-zA-Z0-9!@#%&=,/'\";:~`\$\^\*\(\)\+\[\]\.\{\}\|\?\<\>\\]+|[^\s]+)")
-            x = strip_unicode.sub("", x.decode("utf-8"))
-            
-            
-        except Exception:
-            #print 'encoding error: {0} {1}'.format(rowCount, tdCount)
-            x = ""
-            
-        return x  
     
     def encode_text(self,x):
         try:
@@ -228,6 +191,7 @@ class Page:
                 raise
     
     def create_zip_folder(self,path):
+        print("Creating Zip folder")
         zipfolder_name=path+'.zip'
         zf = zipfile.ZipFile(zipfolder_name, "w")
         for dirname, subdirs, files in os.walk(path):
@@ -237,16 +201,13 @@ class Page:
         zf.close()
     
     def upload_zip_to_s3(self,filetoupload):
+        print("Upload to s3")
         S3_ACCESS_KEY= input("Enter S3_ACCESS_KEY : ")
         S3_SECRET_KEY =  input("Enter S3_SECRET_KEY : ")
         
-#         S3_ACCESS_KEY = ConfigSectionMap("Part_1")['s3_access_key']#'AKIAICSMTFLAR54DYMQQ'
-#         S3_SECRET_KEY = ConfigSectionMap("Part_1")['s3_secret_key']#'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'
         try:
             conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
-            #bucket = conn.create_bucket('edgar-data-set')
             bucket = input("Enter BUCKET_NAME : ")
-                # Uploading a single file
             f = open(filetoupload,'rb')
             conn.upload(filetoupload,f,bucket)
             print("Upload to s3 successfull")
@@ -254,13 +215,7 @@ class Page:
         except Exception:
             print("INVALID keys, please try again")
             self.upload_zip_to_s3(filetoupload)
-        #host='edgardatasets.s3-website-us-west-2.amazonaws.com'
-        # Creating a simple connection
-        
-        
-        
-                
-                
+    
 Metadata = namedtuple("Metadata", "num_cols num_entries")
 
 
@@ -277,7 +232,7 @@ class DataFrame:
             n_columns = 0
             n_rows=0
             column_names = []
-#             hasColoredTD = false
+
             # Find number of rows and columns
             # we also find the column titles if we can
             for row in table.find_all('tr'):
@@ -329,15 +284,13 @@ class DataFrame:
             print("weird frame >>>> "+df)
             """
             return df
-        
-############ Do we need main here >>??? ###
+
 
 mainUrl = "http://www.sec.gov/Archives/edgar/data/"
 
 CIK = input("Enter CIK (eg :0000051143)")
 DAN = input("Enter document accession number -DAN (eg :000005114313000007 )")
-# CIK=ConfigSectionMap("Part_1")['cik']
-# DAN=ConfigSectionMap("Part_1")['dan']
+
 CIK = CIK.strip().strip("0")
 DAN = DAN.strip()
 partCIK = DAN[0:10]+"-"
@@ -345,10 +298,10 @@ partDAN = DAN[10:12]+"-"
 lastPart = DAN[12:18]+"-index.html"
 
 completeURL = mainUrl+CIK+"/"+DAN+"/"+partCIK+partDAN+lastPart
-print(completeURL)
+print("Scraping the webpage to find 10k/q html file: "+completeURL)
 html = Page(completeURL)
 link1 = html.get_hyperlink()
-print(link1)
+print("10k/q file : "+link1)
 
 ### sample url that contains the tables we want
 #url="https://www.sec.gov/Archives/edgar/data/51143/000005114313000007/ibm13q3_10q.htm"
@@ -356,20 +309,22 @@ print(link1)
 
 
 logger = logging.getLogger()
+
 page = Page(link1)
+
 tables = page.get_tables()
+
 page.create_directory("EdgarFiles/"+CIK)
+
 page.save_tables(tables, ignore_small=False)
+
 page.create_zip_folder('EdgarFiles')
+
 page.upload_zip_to_s3('EdgarFiles.zip')
 
 
 
 # In[ ]:
 
-AKIAJID52SF663DJKYWQ
-4Ze54escLJz3dvN2398ne8FyikJ/Qk6sVnD0V6Cw
 
-AKIAJID52SF663DJKYWQ
-4Ze54escLJz3dvN2398ne8FyikJ/Qk6sVnD0V6Cw
 
