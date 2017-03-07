@@ -1,6 +1,6 @@
 # Data_Wrangling_Edgar_Datasets
 
-## Approach 1 : Quick approach
+## Approach 1 : DockerHub image : Quick approach
 
 ### Steps to run Part-1
 
@@ -35,37 +35,35 @@ docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part2
 4.Enter S3 access key,secret key and bucket name (Provide an existing bucket name). You may proceed towards the analysis if you do not wish to upload the folders to S3 by hittin Y on prompt.
 
 
-## Approach 2:
+## Approach 2 : Dockerfile : (for both Part-1 and Part-2)
+
 1.Download the docker file from the repository.
 
 2.Start docker, build the docker file.
   ```
-  python docker build -t Team1-Part-1 .
+  python docker build -t <desired-image-name> .
   ```
 
 DockerFile downloads python image and installs required packages. It then clones part-1 repo copies required files to the container and sets command to run the part-1 python script.
 
 3.After building docker file. Run following command
 ```
-docker run -ti Team1-Part-1
+docker run -ti <image-name-you-just-provided>
 ```
 
-4.Enter CIK and Accession Number on prompt. 
-
-5.Enter S3 access key,secret key and bucket name (Provide an existing bucket name). You may proceed towards the analysis if you do not wish to upload the folders to S3 by hittin Y on prompt.
-
+4.Enter the required inputs on prompt
 
 
 ##  Approach 3: LUIGI WORKFLOW
 
-1.Download docker image from docker hub- 
+1.Download the docker image from docker hub- 
 ```
 docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
 ```
 
-2.Run container's bash
+2.Run the container's bash
 ```
-docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets bash
+docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1 bash
 ```
 
 3.Change directory 
