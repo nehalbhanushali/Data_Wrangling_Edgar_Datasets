@@ -1,14 +1,13 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[3]:
 
 import requests
 import pandas as pd
 import numpy as np
 #import urllib3 as ur
 import urllib.request as ur
-import configparser
 import os.path
 import zipfile
 import tinys3
@@ -19,26 +18,7 @@ import logging as log
 
 
 
-# In[2]:
-
-Config = configparser.ConfigParser()
-Config.read('config.ini')
-Config.sections()
-def ConfigSectionMap(section):
-    dict1 = {}
-    options = Config.options(section)
-    for option in options:
-        try:
-            dict1[option] = Config.get(section, option)
-            if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
-        except:
-            print("exception on %s!" % option)
-            dict1[option] = None
-    return dict1
-
-
-# In[5]:
+# In[ ]:
 
 #!/usr/bin/env python       
 merged_dataframe=pd.DataFrame()
@@ -153,21 +133,26 @@ class GetData:
         return self.maybe_download(url_list,year)
         
     def fetch_year(self):
-        year = input('Enter the year for which you need to fetch the log files: ')
-        self.create_directory("Part_2_log_datasets_trial/"+year+"/")
-        log.basicConfig(filename='Part_2_log_datasets_trial/EDGAR_LogFileDataset_LogFile.log', level=logging.INFO, format='%(asctime)s %(message)s')
+        year1 = input('Enter the year (eg : 2003) for which you need to fetch the log files. Note: Data available for years 2003 through 2016 only.')
 
-        
+        try:
+            year=int(year1)
+            if(year >= 2003 and year <= 2016):
+                #calling the function to generate dynamic URL
+                self.create_directory("Part_2_log_datasets_trial/"+str(year)+"/")
+                log.basicConfig(filename='Part_2_log_datasets_trial/EDGAR_LogFileDataset_LogFile.log', level=logging.INFO, format='%(asctime)s %(message)s')
+
+                return self.generate_url(year)
+            else:
+                print("EDGAR log files are available for years 2003-2016. Kindly enter a year within this range")
+                self.fetch_year()
+                
+        except Exception:
+            print("Invalid input. Please try again")
+            self.fetch_year()
         #fetch the year for which the user wants logs
        
-        log.info('Start of program')
-        year=int(year)
-        if(year >= 2003 and year < 2016):
-            #calling the function to generate dynamic URL
-            return self.generate_url(year)
-        else:
-            print("EDGAR log files are available for years 2003-2016. Kindly enter a year within this range")
-            fetch_year()
+        log.info('Start of program')    
     
                 
     def create_zip_folder(self,path):
@@ -178,45 +163,39 @@ class GetData:
             for filename in files:
                 zf.write(os.path.join(dirname, filename))
         zf.close()
-    """
-    def upload_zip_to_s3(self,path):
-        S3_ACCESS_KEY = ConfigSectionMap("Part_1")['s3_access_key']#'AKIAICSMTFLAR54DYMQQ'
-        S3_SECRET_KEY = ConfigSectionMap("Part_1")['s3_secret_key']#'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'
-        BUCKET_NAME = ConfigSectionMap("Part_1")['s3_bucket']
-        #host = ConfigSectionMap("Part_1")['HOST']
-        # host='edgardatasets.s3-website-us-west-2.amazonaws.com'
-        # Creating a simple connection
-        conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
-
-        # Uploading a single file
-        f = open("Part_2_log_datasets_trial.zip",'rb')
-        conn.upload("Part_2_log_datasets_trial.zip",f,BUCKET_NAME) 
-    """     
+    
         
         
     def upload_zip_to_s3(self,filetoupload):
+        print("Upload to s3")
         S3_ACCESS_KEY= input("Enter S3_ACCESS_KEY : ")
         S3_SECRET_KEY =  input("Enter S3_SECRET_KEY : ")
         
-#         S3_ACCESS_KEY = ConfigSectionMap("Part_1")['s3_access_key']#'AKIAICSMTFLAR54DYMQQ'
-#         S3_SECRET_KEY = ConfigSectionMap("Part_1")['s3_secret_key']#'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'
-#         try:
-        conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
-        #bucket = conn.create_bucket('edgar-data-set')
-        bucket = input("Enter BUCKET_NAME : ")
-            # Uploading a single file
-        f = open(filetoupload,'rb')
-        print("this is f",f)
-        print("this is file to upload",filetoupload)
-        print("this is bucket",bucket)
-        conn.upload(filetoupload,f,bucket)
-        print("Upload to s3 successfull")
+
+        try:
+            conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
+            bucket = input("Enter BUCKET_NAME : ")
+            f = open(filetoupload,'rb')
+#             print("this is f",f)
+#             print("this is file to upload",filetoupload)
+#             print("this is bucket",bucket)
+            conn.upload(filetoupload,f,bucket)
+            print("Upload to s3 successfull. Proceeding to Analysis")
            
-#         except Exception:
-#             print("INVALID keys, please try again")
-#             self.upload_zip_to_s3(filetoupload)
-        #host='edgardatasets.s3-website-us-west-2.amazonaws.com'
-        # Creating a simple connection      
+        except Exception:
+            print("INVALID keys")
+            choice = input("Proceed without uploading to s3? Y/N : (Select N to try again)")
+            if(choice == "Y" or choice == "y"):
+                print("Folder not uploaded to S3. Proceeding to Analysis ")
+
+            elif(choice == "N" or choice == "n"):
+                self.upload_zip_to_s3(filetoupload)
+                
+            else:
+                print("Invalid input. Try again.")
+                self.upload_zip_to_s3(filetoupload)
+                
+           
         
 get_data_obj=GetData()
 merged_dataframe=get_data_obj.fetch_year()
@@ -329,20 +308,6 @@ class Process_and_analyse_data():
         merged_dataframe
         self.identify_cik_accession_number_anomaly()
     
-    def fetch_company_name_from_cik(self):
-        #we found a list of CIK their company names from a EDGAR's github repository. We are fetching this information to gain the information about company name
-        company_df = pd.read_csv('CIK-mapping.csv') 
-        #renaming column, so that both the dataframes can be merged on the common column
-        company_df = company_df.rename(columns={'CIK': 'cik'})
-        company_df['cik'] = company_df['cik'].astype(np.int64)
-        #merging both the dataframes
-        #merged_df_cik_company_name= df.join(company_df, on='cik', how='left', rsuffix="_review")
-        merged_df_cik_company_name=pd.merge(df, company_df, on='cik')
-        #merged_df_cik_company_name=pd.merge(df,company_df, left_on='cik',right_on='CIK' )
-        #print(merged_df_cik_company_name.head(10))
-        merged_df_cik_company_name
-        self.identify_cik_accession_number_anomaly()
-        
         
     def identify_cik_accession_number_anomaly(self):
         #this operation requires a large amount of time for computaton, thus we are performing this on a subset of data
@@ -368,7 +333,7 @@ class Process_and_analyse_data():
             count=count+1
         log.info("CIK Accession Anomaly flag computed")
         print("CIK Accession Anomaly flag computed")
-        small_df
+        print(small_df)
         self.get_file_name_from_extension()
         
     def get_file_name_from_extension(self):
@@ -390,7 +355,7 @@ class Process_and_analyse_data():
                 small_df["filename"][count]=i
             count=count+1
         print("Filename column created")
-        small_df
+        print(small_df)
         log.info("Filename column created")
         
 get_data_obj=GetData()
@@ -410,25 +375,26 @@ log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>
 
 # In[ ]:
 
+print("Starting Analysis")
 combined_df = pd.read_csv("Part_2_log_datasets_trial/merged_dataframe.csv") #  pass your 12 month combined csv here
 # group by cik and date and get count of ciks for a date   
 temp_df=combined_df.groupby(['cik','date'])['cik'].count()
 temp_df.head()
 
-
-# In[ ]:
-
 # convert group by result into a frame
 
 grouped_frame = pd.DataFrame(temp_df.reset_index(name = "hit_count"))
 
-grouped_frame
+print("Grouping by CIK and Date and getting count for each CIK  ")
+print(grouped_frame)
 
 
 # In[ ]:
 
 ## Monitor change in hit count
-
+# get no of ips(hit count) for CIK per month(only day 1 representing a monthhas been used)
+# if the change is more than 1000 % select that CIK and make a new dataframe for it
+print("Monitoring the change in hit count")
 def get_percent_change(curr, prev):
         change_in_perc = ((curr - prev)/prev ) * 100
         return change_in_perc
@@ -448,52 +414,13 @@ for row in grouped_frame['cik']:
             if(change_in_perc >= 1000 ): ## decide on threshold
                 analysis_df.loc[frame_count, 'cik'] = current_cik
                 analysis_df.loc[frame_count, 'date'] = current_date
+                analysis_df.loc[frame_count, 'current count'] = current_hit_count
+                analysis_df.loc[frame_count, 'previous count'] = grouped_frame['cik'][count-1]
                 analysis_df.loc[frame_count, 'change in %'] = change_in_perc
                 frame_count += 1
                 #print(current_cik ," changed by",change_in_perc," % on ",current_date)
                 
     count +=1
     
-analysis_df
-
-
-# In[ ]:
-
-
-# Load the data into a DataFrame
-data = pd.read_csv('Part_2_log_datasets_trial/merged_dataframe.csv') # pass your single month stuff here
-#grouping by IP
-byIp = data.groupby('ip')
-byIp
-
-
-# In[ ]:
-
-byCIK = data.groupby('cik')
-byCIK['size'].max()
-
-
-# In[ ]:
-
-#getting requests with  status code 404
-byIp404=data[data['code']==404]
-byIp404
-#Anamoly-request with 404 has a download size associated.
-
-
-# In[ ]:
-
-byIp404=data[data['code']==404].groupby('ip')
-byIp404['size'].mean()
-
-
-# In[ ]:
-
-#1. Simple describe function on data
-summary = data.describe()
-summary
-#Analysis: total number of requests on this day-  261289
-#Average request per day :215
-#Max file download size:5.259544e+07
-#Avergae File donwload size:	1.703470e+05
+print(analysis_df)
 
