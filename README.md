@@ -6,12 +6,12 @@
 
 1.Download docker image from docker hub- 
 ```
-docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
+docker pull nehalbhanushali/data_wrangling_edgar_datasets:part1
 ```
 
 2.Run the image
 ```
-docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
+docker run -ti nehalbhanushali/data_wrangling_edgar_datasets:part1
 ```
 
 3.Enter CIK and Accesion number on prompt
@@ -22,12 +22,12 @@ docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
 
 1.Download docker image from docker hub- 
 ```
-docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part2
+docker pull nehalbhanushali/data_wrangling_edgar_datasets:part2
 ```
 
 2.Run the image
 ```
-docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part2
+docker run -ti nehalbhanushali/data_wrangling_edgar_datasets:part2
 ```
 
 3.Enter the year for which the data is desired on prompt. The year must be between 2003 and 2016 as the data is available only for this duration.
@@ -58,12 +58,12 @@ docker run -ti <image-name-you-just-provided>
 
 1.Download the docker image from docker hub- 
 ```
-docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
+docker pull nehalbhanushali/data_wrangling_edgar_datasets:part1
 ```
 
 2.Run the container's bash
 ```
-docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1 bash
+docker run -ti nehalbhanushali/data_wrangling_edgar_datasets:part1 bash
 ```
 
 3.Change directory 
