@@ -1,44 +1,84 @@
 # Data_Wrangling_Edgar_Datasets
-Assignment for Advances in Datasciences 
+
+## Approach 1 : Quick approach
+
+### Steps to run Part-1
+
+1.Download docker image from docker hub- 
+```
+docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
+```
+
+2.Run the image
+```
+docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
+```
+
+3.Enter CIK and Accesion number on prompt
+
+4.Enter S3 access key,secret key and bucket name (Provide an existing bucket name)
+
+### Steps to run Part-2
+
+1.Download docker image from docker hub- 
+```
+docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part2
+```
+
+2.Run the image
+```
+docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets:part2
+```
+
+3.Enter the year for which the data is desired on prompt. The year must be between 2003 and 2016 as the data is available only for this duration.
+
+4.Enter S3 access key,secret key and bucket name (Provide an existing bucket name). You may proceed towards the analysis if you do not wish to upload the folders to S3 by hittin Y on prompt.
 
 
-Steps to run Part-1
-Approach one:-
-1. Download the docker file from the repository.
+## Approach 2:
+1.Download the docker file from the repository.
 
-2. Start docker, build the docker file.
-  ```python docker build -t Team1-Part-1 . ```
+2.Start docker, build the docker file.
+  ```
+  python docker build -t Team1-Part-1 .
+  ```
 
-DockerFile downloads python image and installs required packages. It then clones part-1 repo copies required files to container and sets command to run part-1 python script.
+DockerFile downloads python image and installs required packages. It then clones part-1 repo copies required files to the container and sets command to run the part-1 python script.
 
-3. After building docker file. Run following command
-```docker run -ti Team1-Part-1 ```
+3.After building docker file. Run following command
+```
+docker run -ti Team1-Part-1
+```
 
-4. Enter CIK and Accession Number via console input. 
-5. The Access Code and Secret Key are part of config.ini file.You can  edit it on github and build docker file and run container.
+4.Enter CIK and Accession Number on prompt. 
 
-Approach 2:
-
-1. Download docker image from docker hub- 
-```docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets```
+5.Enter S3 access key,secret key and bucket name (Provide an existing bucket name). You may proceed towards the analysis if you do not wish to upload the folders to S3 by hittin Y on prompt.
 
 
-LUIGI WORKFLOW
-Approach 3:
 
-1. Download docker image from docker hub- 
-```docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets```
+##  Approach 3: LUIGI WORKFLOW
 
-2. Run container's bash
-```docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets bash```
+1.Download docker image from docker hub- 
+```
+docker pull nehalbhanushali/Data_Wrangling_Edgar_Datasets:part1
+```
 
-3. Change directory 
-```cd /src```
+2.Run container's bash
+```
+docker run -ti nehalbhanushali/Data_Wrangling_Edgar_Datasets bash
+```
 
-4. Running the pipline using luigi : The luigi workflow has two task one for scrapping and creating zip folder of CSV files and second task to upload to S3.
-```python3 run_luigi.py UploadToS3  --local-schedule --CIK '0000051143' --DAN '000005114313000007' --S3bucketName 'edgardatasets' ```
+3.Change directory 
+```
+cd /src
+```
 
-KNOW ISSUE
-the S3 luigi has a known  issue which appears sometimes when running the job.
-https://github.com/spotify/luigi/issues/1552
+4.Running the pipline using luigi : The luigi workflow has two task one for scrapping and creating zip folder of CSV files and second task to upload to S3.
+```
+python3 run_luigi.py UploadToS3  --local-schedule --CIK '0000051143' --DAN '000005114313000007' --S3bucketName '<yourbucketname>'
+```
+
+### KNOWN ISSUE
+the S3 luigi has a [known issue](https://github.com/spotify/luigi/issues/1552) which appears sometimes when running the job.
+
 
