@@ -18,7 +18,7 @@ import logging as log
 
 
 
-# In[ ]:
+# In[4]:
 
 #!/usr/bin/env python       
 merged_dataframe=pd.DataFrame()
@@ -66,19 +66,19 @@ class GetData:
            
 
             #Downloading data if not already present in the cache
-            if(os.path.exists("Part_2_log_datasets_trial/"+year+"/"+file_name[8])):
+            if(os.path.exists("Part_2_log_datasets/"+year+"/"+file_name[8])):
                 print("Data for ",file_name[8]," is already present, pulling it from cache")
                 
 
             else:
                 #pbar = ProgressBar(widgets=[Percentage(), Bar()])
-                ur.urlretrieve(i, "Part_2_log_datasets_trial/"+year+"/"+file_name[8])
-                #ur.urlretrieve(i, "Part_2_log_datasets_trial/"+year+"/"+file_name[8], reporthook)
+                ur.urlretrieve(i, "Part_2_log_datasets/"+year+"/"+file_name[8])
+                #ur.urlretrieve(i, "Part_2_log_datasets/"+year+"/"+file_name[8], reporthook)
                 print("Data for ",file_name[8],"not present in cache. Downloading data")
                 
             
             #unzip the file and fetch the csv file
-            zf = zipfile.ZipFile("Part_2_log_datasets_trial/"+year+"/"+file_name[8]) 
+            zf = zipfile.ZipFile("Part_2_log_datasets/"+year+"/"+file_name[8]) 
             csv_file_name=file_name[8].replace("zip", "csv")
             zf_file=zf.open(csv_file_name)
             
@@ -139,8 +139,8 @@ class GetData:
             year=int(year1)
             if(year >= 2003 and year <= 2016):
                 #calling the function to generate dynamic URL
-                self.create_directory("Part_2_log_datasets_trial/"+str(year)+"/")
-                log.basicConfig(filename='Part_2_log_datasets_trial/EDGAR_LogFileDataset_LogFile.log', level=logging.INFO, format='%(asctime)s %(message)s')
+                self.create_directory("Part_2_log_datasets/"+str(year)+"/")
+                log.basicConfig(filename='Part_2_log_datasets/EDGAR_LogFileDataset_LogFile.log', level=logging.INFO, format='%(asctime)s %(message)s')
 
                 return self.generate_url(year)
             else:
@@ -180,6 +180,7 @@ class GetData:
 #             print("this is file to upload",filetoupload)
 #             print("this is bucket",bucket)
             conn.upload(filetoupload,f,bucket)
+            log.info("Data zipped and loaded on S3")
             print("Upload to s3 successfull. Proceeding to Analysis")
            
         except Exception:
@@ -301,7 +302,7 @@ class Process_and_analyse_data():
         
         log.info("Exporting merged dataframe to local system")
         print("Exporting merged dataframe to local system")
-        df.to_csv("Part_2_log_datasets_trial/merged_dataframe.csv")
+        df.to_csv("Part_2_log_datasets/merged_dataframe.csv")
         log.info("Merged dataframe exported")
         print("Merged dataframe exported")
         
@@ -365,10 +366,10 @@ process_data_obj=Process_and_analyse_data()
 process_data_obj.format_dataframe_columns()
 
 log.info("Zipping the folder for loading in S3")
-get_data_obj.create_zip_folder("Part_2_log_datasets_trial")
-get_data_obj.upload_zip_to_s3("Part_2_log_datasets_trial.zip")
-log.info("Data zipped and loaded on S3")
-print("Data zipped and loaded on S3")
+get_data_obj.create_zip_folder("Part_2_log_datasets")
+get_data_obj.upload_zip_to_s3("Part_2_log_datasets.zip")
+
+
 log.info("Pipeline completed!!")
 log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
@@ -376,7 +377,7 @@ log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>
 # In[ ]:
 
 print("Starting Analysis")
-combined_df = pd.read_csv("Part_2_log_datasets_trial/merged_dataframe.csv") #  pass your 12 month combined csv here
+combined_df = pd.read_csv("Part_2_log_datasets/merged_dataframe.csv") #  pass your 12 month combined csv here
 # group by cik and date and get count of ciks for a date   
 temp_df=combined_df.groupby(['cik','date'])['cik'].count()
 temp_df.head()
