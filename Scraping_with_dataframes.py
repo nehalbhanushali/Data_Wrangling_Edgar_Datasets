@@ -206,8 +206,9 @@ class Page:
         S3_SECRET_KEY =  input("Enter S3_SECRET_KEY : ")
         
         try:
-            conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
             bucket = input("Enter BUCKET_NAME : ")
+            my_endpoint = "s3-us-west-1.amazonaws.com"
+            conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY,tls=True,endpoint=my_endpoint)
             f = open(filetoupload,'rb')
             conn.upload(filetoupload,f,bucket)
             print("Upload to s3 successfull")
@@ -321,10 +322,5 @@ page.save_tables(tables, ignore_small=False)
 page.create_zip_folder('EdgarFiles')
 
 page.upload_zip_to_s3('EdgarFiles.zip')
-
-
-
-# In[ ]:
-
 
 

@@ -173,8 +173,9 @@ class GetData:
         
 
         try:
-            conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY)
             bucket = input("Enter BUCKET_NAME : ")
+            my_endpoint = "s3-us-west-1.amazonaws.com"
+            conn = tinys3.Connection(S3_ACCESS_KEY,S3_SECRET_KEY,tls=True,endpoint=my_endpoint)
             f = open(filetoupload,'rb')
 #             print("this is f",f)
 #             print("this is file to upload",filetoupload)
