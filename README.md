@@ -41,7 +41,7 @@ docker run -ti nehalbhanushali/data_wrangling_edgar_datasets:part2
 
 2.Start docker, build the docker file.
   ```
-  python docker build -t <desired-image-name> .
+  docker build -t <desired-image-name> .
   ```
 
 DockerFile downloads python image and installs required packages. It then clones part-1 repo copies required files to the container and sets command to run the part-1 python script.
